@@ -248,6 +248,11 @@ void MyKeyboardCallback(int key, int state)
 		{
 			singleStepSimulation = true;
 		}
+		if (key == 'r' && state)
+        {
+            printf("Demo reset via R key\n");
+            selectDemo(sCurrentDemoIndex);
+        }
 
 		if (key == 'p')
 		{
