@@ -225,7 +225,7 @@ btScalar suspensionRestLength(0.6);
 
 
 
-
+///////////////////////////////////////
 // RG: globals
 // Make the keyboard callback static, and forward to the current instance
 static CommonExampleInterface* g_currentDemo = nullptr;
@@ -243,12 +243,18 @@ static CommonExampleOptions* g_options; // for possible re-creation of the demo
 // But static works. But why?????
 //#ifdef B3_USE_STANDALONE_EXAMPLE
 //extern CommonGraphicsApp* g_app;
-extern CommonGraphicsApp* g_app;
+// NOTE: From main_opengl_single_example.cpp
+// NOTE: If we do this we can no longer build ExampleBrowser:
+// Undefined symbols for architecture arm64:
+//   "_g_app", referenced from:
+//       ForkLiftDemo::renderScene() in ForkLiftDemo.cpp.o
+// ld: symbol(s) not found for architecture arm64
+//extern CommonGraphicsApp* g_app;
 //#endif
-static bool renderGrid = true;
+static bool g_renderGrid = true;
 
 
-void MyKeyboardCallback(int key, int state)
+void MyKeyboardCallback2(int key, int state)
 {
     // call your member function
     if (g_currentDemo)
@@ -259,7 +265,10 @@ void MyKeyboardCallback(int key, int state)
         g_prevKeyboardCallback(key, state);
 }
 
-////////////////////////////////////
+///////////////////////////////////////
+
+
+
 
 ForkLiftDemo::ForkLiftDemo(struct GUIHelperInterface* helper)
 	: m_guiHelper(helper),
@@ -283,7 +292,7 @@ ForkLiftDemo::ForkLiftDemo(struct GUIHelperInterface* helper)
     g_prevKeyboardCallback = window->getKeyboardCallback();
 
     // set the static callback
-    window->setKeyboardCallback(MyKeyboardCallback);
+    window->setKeyboardCallback(MyKeyboardCallback2);
     /////////////////////////////
 
 
@@ -622,14 +631,14 @@ void ForkLiftDemo::renderScene()
 	}
 
     // RG: render grid
-    if (renderGrid && g_renderer)
-    {
-        if (g_app) {
-            DrawGridData dg;
-            dg.upAxis = g_app->getUpAxis();
-            g_app->drawGrid(dg);    
-        }
-    }
+    // if (g_renderGrid && g_renderer)
+    // {
+    //     if (g_app) {
+    //         DrawGridData dg;
+    //         dg.upAxis = g_app->getUpAxis();
+    //         g_app->drawGrid(dg);    
+    //     }
+    // }
 
 
 	m_guiHelper->render(m_dynamicsWorld);
@@ -938,7 +947,7 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
                     printf("Toggle grid via G key\n");
                     // SHIT: 'g' is handled in another callback
                     // NONO: Fine now when building with VS Code
-                    renderGrid = !renderGrid;
+                    g_renderGrid = !g_renderGrid;
                     //renderGui = !renderGui;
                     break;
                 }
@@ -1035,7 +1044,7 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
 		{
 			case B3G_UP_ARROW:
 			{
-                printf("Fork Stop\n");
+                printf("Forward/Fork Stop\n");
 				lockForkSlider();
 				gEngineForce = 0.f;
 				gBreakingForce = defaultBreakingForce;

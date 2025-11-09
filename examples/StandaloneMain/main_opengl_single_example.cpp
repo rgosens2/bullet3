@@ -21,8 +21,17 @@ subject to the following restrictions:
 #include <stdio.h>
 #include "../ExampleBrowser/OpenGLGuiHelper.h"
 
+
+///////////////////////////////////////
 // RG: globals
 CommonGraphicsApp* g_app = nullptr;
+
+extern bool g_renderGrid = false;
+///////////////////////////////////////
+
+
+
+
 
 CommonExampleInterface* example;
 int gSharedMemoryKey = -1;
@@ -119,9 +128,12 @@ int main(int argc, char* argv[])
         // YESS: We now get here when we using VS Code
 
         // NOTE: We do this in ForkLiftDemo.cpp with a toggle
-		// DrawGridData dg;
-		// dg.upAxis = app->getUpAxis();
-		// app->drawGrid(dg);
+        // NONO: Do it here with a toggle from there
+        if (g_renderGrid) {
+            DrawGridData dg;
+            dg.upAxis = app->getUpAxis();
+            app->drawGrid(dg);
+        }
 
 		app->swapBuffer();
 	} while (!app->m_window->requestedExit());
