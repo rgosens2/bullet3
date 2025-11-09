@@ -18,6 +18,17 @@ subject to the following restrictions:
 ///@todo is a basic engine model:
 ///A function that maps user input (throttle) into torque/force applied on the wheels
 ///with gears etc.
+
+// RG:
+// NOTE: Build met build_cmake_pybullet_double2.sh kreeg deze ForkLiftDemp niet goed werkend als standalone.
+// Het leek wel alsof er geen main() aangeroepen werd.
+// Maar de main() is wel degelijk in examples/StandaloneMain/main_opengl_single_example.cpp
+// Build met VS Code ging wel goed. We gebruiken dit in tasks.json:
+// "command": "cmake",
+//            "args": ["--build", "build", "--target", "AppForkLiftDemoGui"]
+// Dit build specifiek alleen de ForkLiftDemo als standalone app met OpenGL GUI.
+
+
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 
@@ -197,8 +208,8 @@ float maxEngineForce = 1000.f;  //this should be engine/velocity dependent
 float maxBreakingForce = 100.f;
 
 float gVehicleSteering = 0.f;
-float steeringIncrement = 0.04f;
-float steeringClamp = 0.3f;
+float steeringIncrement = 0.0f;
+float steeringClamp = 0.6f; // RG: changed from 0.3f to 0.6f
 float wheelRadius = 0.5f;
 float wheelWidth = 0.4f;
 float wheelFriction = 1000;  //BT_LARGE_FLOAT;
@@ -210,6 +221,43 @@ float rollInfluence = 0.1f;  //1.0f;
 btScalar suspensionRestLength(0.6);
 
 #define CUBE_HALF_EXTENTS 1
+
+
+
+
+
+// RG: globals
+// Make the keyboard callback static, and forward to the current instance
+static CommonExampleInterface* g_currentDemo = nullptr;
+static void (*g_prevKeyboardCallback)(int key, int state) = nullptr;
+static CommonRenderInterface* g_renderer = nullptr;
+static CommonExampleOptions* g_options; // for possible re-creation of the demo
+//static CommonGraphicsApp* g_app = 0;
+//static GUIHelperInterface* g_guiHelper = 0;
+//static GUIHelperInterface* g_guiHelper = nullptr;
+// NOTE: This fucks up ExampleBrowser build.
+// We need it for the standalone build and get it from main_opengl_single_example.cpp
+// But that file is not linked when building ExampleBrowser
+// So must guard it:
+// SHIT: guard no go.
+// But static works. But why?????
+//#ifdef B3_USE_STANDALONE_EXAMPLE
+//extern CommonGraphicsApp* g_app;
+extern CommonGraphicsApp* g_app;
+//#endif
+static bool renderGrid = true;
+
+
+void MyKeyboardCallback(int key, int state)
+{
+    // call your member function
+    if (g_currentDemo)
+        g_currentDemo->keyboardCallback(key, state);
+
+    // call previous global callback if it exists
+    if (g_prevKeyboardCallback)
+        g_prevKeyboardCallback(key, state);
+}
 
 ////////////////////////////////////
 
@@ -225,6 +273,20 @@ ForkLiftDemo::ForkLiftDemo(struct GUIHelperInterface* helper)
 	  m_minCameraDistance(3.f),
 	  m_maxCameraDistance(10.f)
 {
+    // RG: keyboard callback setup for standalone demo
+    // Let's hope this does not fuck up ExampleBrowser
+    g_currentDemo = this;  // store the current instance globally
+
+    auto window = m_guiHelper->getAppInterface()->m_window;
+
+    // store previous callback if needed
+    g_prevKeyboardCallback = window->getKeyboardCallback();
+
+    // set the static callback
+    window->setKeyboardCallback(MyKeyboardCallback);
+    /////////////////////////////
+
+
 	helper->setUpAxis(1);
 	m_vehicle = 0;
 	m_wheelShape = 0;
@@ -549,6 +611,7 @@ void ForkLiftDemo::renderScene()
 		m_vehicle->updateWheelTransform(i, true);
 
 		CommonRenderInterface* renderer = m_guiHelper->getRenderInterface();
+        g_renderer = renderer; // RG: store for global access
 		if (renderer)
 		{
 			btTransform tr = m_vehicle->getWheelInfo(i).m_worldTransform;
@@ -557,6 +620,17 @@ void ForkLiftDemo::renderScene()
 			renderer->writeSingleInstanceTransformToCPU(pos, orn, m_wheelInstances[i]);
 		}
 	}
+
+    // RG: render grid
+    if (renderGrid && g_renderer)
+    {
+        if (g_app) {
+            DrawGridData dg;
+            dg.upAxis = g_app->getUpAxis();
+            g_app->drawGrid(dg);    
+        }
+    }
+
 
 	m_guiHelper->render(m_dynamicsWorld);
 
@@ -649,6 +723,13 @@ void ForkLiftDemo::stepSimulation(float deltaTime)
 		wheelIndex = 3;
 		m_vehicle->applyEngineForce(gEngineForce, wheelIndex);
 		m_vehicle->setBrake(gBreakingForce, wheelIndex);
+
+        // RG:
+		gVehicleSteering += steeringIncrement;
+        if (gVehicleSteering > steeringClamp)
+            gVehicleSteering = steeringClamp;
+        if (gVehicleSteering < -steeringClamp)
+            gVehicleSteering = -steeringClamp;
 
 		wheelIndex = 0;
 		m_vehicle->setSteeringValue(gVehicleSteering, wheelIndex);
@@ -798,6 +879,7 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
 				}
 				case B3G_UP_ARROW:
 				{
+                    printf("Fork Up\n");
 					m_forkSlider->setLowerLinLimit(0.1f);
 					m_forkSlider->setUpperLinLimit(3.9f);
 					m_forkSlider->setPoweredLinMotor(true);
@@ -822,26 +904,74 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
 		{
 			switch (key)
 			{
+                // RG:
+                case 'r':
+                {
+                    printf("Demo reset via R key\n");
+                    //selectDemo(sCurrentDemoIndex);
+                    // Destroy§
+                    //g_currentDemo->exitPhysics();
+                    //g_renderer->removeAllInstances();
+                    // NOTE: We cannot delete and re-create the demo properly yet in standalone mode
+                    //delete g_currentDemo;
+		            //g_currentDemo = 0;
+                    // TODO: See: selectDemo() in ExampleBrowser for proper handling
+                    // NEED: createfunction to re-create the demo properly
+                    // Recreate
+                    //g_currentDemo = ForkLiftCreateFunc(*g_options);
+                    // SHIT: We have lost the ground plane and the forklift lift. Why?
+                    //g_currentDemo->initPhysics();
+                    //g_currentDemo->resetCamera();
+                    //this->clientResetScene();
+                    // YESS: This is all it needs to reset
+                    // NOTE: It only resets graphics. It is not a total recreate like in ExampleBrowser.
+                    // That is not necessary.
+                    this->resetForklift();
+                    break;
+                }
+                case 'g':
+                {
+                    // SHIT: We do noting here but still grid is toggled by another keyboard handler.
+                    // Where? Fuck that: must be somewhere like that mousemove handler in
+                    // bullet3/examples/CommonInterfaces/CommonGraphicsAppInterface.h
+                    // Gonna be another wild goose chase.
+                    printf("Toggle grid via G key\n");
+                    // SHIT: 'g' is handled in another callback
+                    // NONO: Fine now when building with VS Code
+                    renderGrid = !renderGrid;
+                    //renderGui = !renderGui;
+                    break;
+                }
 				case B3G_LEFT_ARROW:
 				{
+                    handled = true;
+
+                    // RG:
+                    printf("Steering Left\n");
 					handled = true;
-					gVehicleSteering += steeringIncrement;
-					if (gVehicleSteering > steeringClamp)
-						gVehicleSteering = steeringClamp;
+                    steeringIncrement = 0.01f;
+					// gVehicleSteering += steeringIncrement; 
+					// if (gVehicleSteering > steeringClamp)
+					// 	gVehicleSteering = steeringClamp;
 
 					break;
 				}
 				case B3G_RIGHT_ARROW:
 				{
 					handled = true;
-					gVehicleSteering -= steeringIncrement;
-					if (gVehicleSteering < -steeringClamp)
-						gVehicleSteering = -steeringClamp;
+                    // RG:
+                    printf("Steering Right\n");
+					handled = true;
+                    steeringIncrement = -0.01f;
+					// gVehicleSteering -= steeringIncrement;
+					// if (gVehicleSteering < -steeringClamp)
+					// 	gVehicleSteering = -steeringClamp;
 
 					break;
 				}
 				case B3G_UP_ARROW:
 				{
+                    printf("Forward\n");
 					handled = true;
 					gEngineForce = maxEngineForce;
 					gBreakingForce = 0.f;
@@ -899,12 +1029,13 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
 			}
 		}
 	}
-	else
+	else // RG: key released
 	{
 		switch (key)
 		{
 			case B3G_UP_ARROW:
 			{
+                printf("Fork Stop\n");
 				lockForkSlider();
 				gEngineForce = 0.f;
 				gBreakingForce = defaultBreakingForce;
@@ -920,8 +1051,18 @@ bool ForkLiftDemo::keyboardCallback(int key, int state)
 				break;
 			}
 			case B3G_LEFT_ARROW:
+            {   // RG:
+                printf("Stop Steering Left\n");
+                steeringIncrement = 0.0f;
+                lockLiftHinge();
+                handled = true;
+                break;
+            }
 			case B3G_RIGHT_ARROW:
 			{
+                // RG:
+                printf("Stop Steering Right\n");
+                steeringIncrement = 0.0f;
 				lockLiftHinge();
 				handled = true;
 				break;
@@ -1154,5 +1295,15 @@ btRigidBody* ForkLiftDemo::localCreateRigidBody(btScalar mass, const btTransform
 
 CommonExampleInterface* ForkLiftCreateFunc(struct CommonExampleOptions& options)
 {
+    // // Free any previous copy
+    // delete g_options;
+
+    // // Create a new one (explicitly calling constructor)
+    // g_options = new CommonExampleOptions(options.m_guiHelper);
+
 	return new ForkLiftDemo(options.m_guiHelper);
 }
+
+// RG:
+// Make it visible to the generic main_opengl_single_example.cpp
+B3_STANDALONE_EXAMPLE(ForkLiftCreateFunc)

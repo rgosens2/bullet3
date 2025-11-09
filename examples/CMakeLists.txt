@@ -1,4 +1,6 @@
-SUBDIRS( HelloWorld BasicDemo)
+# RG:
+#SUBDIRS( HelloWorld BasicDemo)
+SUBDIRS( HelloWorld BasicDemo ForkLift)
 IF(BUILD_BULLET3)
 	SUBDIRS( ExampleBrowser RobotSimulator SharedMemory ThirdPartyLibs/Gwen ThirdPartyLibs/BussIK ThirdPartyLibs/clsocket OpenGLWindow TwoJoint )
 ENDIF()

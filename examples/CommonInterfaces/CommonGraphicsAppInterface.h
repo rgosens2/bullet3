@@ -5,6 +5,8 @@
 #include "CommonRenderInterface.h"
 #include "CommonWindowInterface.h"
 #include "CommonCameraInterface.h"
+// RG:
+#include <stdio.h>
 
 struct DrawGridData
 {
@@ -159,6 +161,7 @@ struct CommonGraphicsApp
 		m_mouseYpos = y;
 		m_mouseInitialized = true;
 	}
+    // RG: YESSSS!!! Here it is: the default mouse move callback for camera control
 	void defaultMouseMoveCallback(float x, float y)
 	{
 		if (m_window && m_renderer)
@@ -170,6 +173,10 @@ struct CommonGraphicsApp
 
 			if (isAltPressed || isControlPressed)
 			{
+                // RG:
+                printf("We are here: %s:%d\n", __FILE__, __LINE__);
+                printf("SimpleOpenGL3App::defaultMouseMoveCallback x=%f y=%f\n", x, y);
+
 				float xDelta = x - m_mouseXpos;
 				float yDelta = y - m_mouseYpos;
 				float cameraDistance = camera->getCameraDistance();

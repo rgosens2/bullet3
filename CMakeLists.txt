@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
+# RG:
+# NOTE: 3.5 gives a warning but 3.10 is OK.
+# We keep it to easily open this file from Problems in VSCode.
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 cmake_policy(SET CMP0017 NEW)
 #this line has to appear before 'PROJECT' in order to be able to disable incremental linking
@@ -402,7 +405,46 @@ ENDIF()
 
 IF(BUILD_BULLET3)
 	 IF(APPLE)
-		MESSAGE("Mac OSX Version is ${_CURRENT_OSX_VERSION}")
+        ###########################
+        #RG: get OSX version
+        #find the OSX version
+        execute_process(
+            COMMAND sw_vers -productVersion
+            OUTPUT_VARIABLE _CURRENT_OSX_VERSION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        message("\n==========================")
+        message("Mac OSX Version is ${_CURRENT_OSX_VERSION}")
+        message("RG rules CMake")
+        message("NOTE: Any /Library... message below is caused by SUBDIRS()\n") 
+        # TEST: Colored output
+        message("Testing colors:")
+        execute_process(
+            COMMAND 
+            ${CMAKE_COMMAND} -E env CLICOLOR_FORCE=1
+            ${CMAKE_COMMAND} -E cmake_echo_color --blue "This is not blue"
+        )
+        # message(WARNING "This is yellowgreen")
+        
+        # set(ColourReset "${Esc}[m")
+        # set(Yellow      "${Esc}[33m")
+        # message("${Yellow}This is Yellow${ColourReset}")
+        execute_process(
+            COMMAND 
+            ${CMAKE_COMMAND} -E env CLICOLOR_FORCE=1
+            ${CMAKE_COMMAND} -E cmake_echo_color --red --bold "Hello red"
+        )
+        execute_process(
+            COMMAND 
+            ${CMAKE_COMMAND} -E env CLICOLOR_FORCE=1
+            ${CMAKE_COMMAND} -E cmake_echo_color --green --bold "Hello green"
+        )
+        message("==========================\n")
+        ###########################
+
+		#MESSAGE("Mac OSX Version is ${_CURRENT_OSX_VERSION}")
+
+
 		IF(_CURRENT_OSX_VERSION  VERSION_LESS 10.9)
 			MESSAGE("Mac OSX below 10.9 has no OpenGL 3 support so please disable the BUILD_OPENGL3_DEMOS option")
 			#unset(BUILD_OPENGL3_DEMOS CACHE)

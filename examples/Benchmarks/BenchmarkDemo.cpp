@@ -322,7 +322,9 @@ void BenchmarkDemo::stepSimulation(float deltaTime)
 {
 	if (m_dynamicsWorld)
 	{
-		m_dynamicsWorld->stepSimulation(deltaTime);
+        // RG: speed up simulation
+		//m_dynamicsWorld->stepSimulation(deltaTime);
+        m_dynamicsWorld->stepSimulation(deltaTime*8, 1, 1.0f/60.0f );
 	}
 
 	if (m_benchmark == 7)

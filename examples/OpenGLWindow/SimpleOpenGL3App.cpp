@@ -119,6 +119,7 @@ void SimpleMouseButtonCallback(int button, int state, float x, float y)
 {
 	gApp->defaultMouseButtonCallback(button, state, x, y);
 }
+// RG: Here it is: setting the default mouse move callback for camera control
 void SimpleMouseMoveCallback(float x, float y)
 {
 	gApp->defaultMouseMoveCallback(x, y);

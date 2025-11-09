@@ -149,6 +149,9 @@ bool BulletURDFImporter::loadURDF(const char* fileName, bool forceFixedBase)
 
 	if (!fileFound)
 	{
+        // RG:
+        printf("Path: %s\n", relativeFileName);
+        b3Warning("Path: %s\n", relativeFileName);
 		b3Warning("URDF file '%s' not found\n", fileName);
 		return false;
 	}

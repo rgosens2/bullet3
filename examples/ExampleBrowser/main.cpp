@@ -70,6 +70,11 @@ int main(int argc, char* argv[])
 		ExampleEntriesAll examples;
 		examples.initExampleEntries();
 
+        // RG:
+        for (int i = 0; i < examples.getNumRegisteredExamples(); i++){
+            printf("%s\n", examples.getExampleName(i));
+        }
+
 		OpenGLExampleBrowser* exampleBrowser = new OpenGLExampleBrowser(&examples);
 		sExampleBrowser = exampleBrowser;  //for <CTRL-C> etc, cleanup shared memory
 		bool init = exampleBrowser->init(argc, argv);
@@ -82,6 +87,7 @@ int main(int argc, char* argv[])
 		clock.reset();
 		if (init)
 		{
+            // RG: game loop ////////////////////
 			do
 			{
 				float deltaTimeInSeconds = clock.getTimeMicroseconds() / 1000000.f;
@@ -97,6 +103,21 @@ int main(int argc, char* argv[])
 				{
 					clock.reset();
 					exampleBrowser->update(deltaTimeInSeconds);
+
+                    // RG: FPS counter ////////////////////
+                    static int frameCount = 0;
+                    static double accTime = 0.0;
+
+                    accTime += deltaTimeInSeconds;
+                    frameCount++;
+
+                    if (accTime >= 1.0)
+                    {
+                        printf("FPS: %d\n", frameCount);
+                        frameCount = 0;
+                        accTime = 0.0;
+                    }
+                    ///////////////////////////////////////
 				}
 			} while (!exampleBrowser->requestedExit() && !interrupted);
 		}

@@ -93,6 +93,13 @@ struct OpenGLExampleBrowserInternalData
 	}
 };
 
+// RG:
+// declare the global pointer exists somewhere else
+//extern OpenGLExampleBrowser* sExampleBrowser;
+// function declaration
+void selectDemo(int demoIndex);
+
+
 static CommonGraphicsApp* s_app = 0;
 
 static CommonWindowInterface* s_window = 0;
@@ -248,11 +255,6 @@ void MyKeyboardCallback(int key, int state)
 		{
 			singleStepSimulation = true;
 		}
-		if (key == 'r' && state)
-        {
-            printf("Demo reset via R key\n");
-            selectDemo(sCurrentDemoIndex);
-        }
 
 		if (key == 'p')
 		{
@@ -315,6 +317,8 @@ static void MyMouseMoveCallback(float x, float y)
 {
 	bool handled = false;
 	if (sCurrentDemo)
+        // RG:
+        // NOTE: This allows the demo to process mouse move events first (which it does not).
 		handled = sCurrentDemo->mouseMoveCallback(x, y);
 	if (renderGui)
 	{
@@ -323,6 +327,12 @@ static void MyMouseMoveCallback(float x, float y)
 	}
 	if (!handled)
 	{
+        // RG:
+        // NOTE: This is where we fall back to the previous mouse move callback.
+        // It will handle camera movements.
+        // It is: void defaultMouseMoveCallback(float x, float y)
+        // In: bullet3/examples/CommonInterfaces/CommonGraphicsAppInterface.h
+        //return;
 		if (prevMouseMoveCallback)
 			prevMouseMoveCallback(x, y);
 	}
@@ -461,6 +471,9 @@ void openFileDemo(const char* filename)
 
 void selectDemo(int demoIndex)
 {
+    // RG:
+    printf("Selecting demo index %d\n", demoIndex);
+
 	bool resetCamera = (sCurrentDemoIndex != demoIndex);
 	sCurrentDemoIndex = demoIndex;
 	sCurrentHightlighted = demoIndex;
@@ -1364,3 +1377,7 @@ void OpenGLExampleBrowser::setSharedMemoryInterface(class SharedMemoryInterface*
 	gDisableDemoSelection = true;
 	sSharedMem = sharedMem;
 }
+
+
+
+

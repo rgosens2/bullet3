@@ -1179,6 +1179,10 @@ void OpenGLGuiHelper::setVisualizerFlag(int flag, int enable)
 
 void OpenGLGuiHelper::resetCamera(float camDist, float yaw, float pitch, float camPosX, float camPosY, float camPosZ)
 {
+    // RG:
+    //printf("OpenGLGuiHelper::resetCamera: camDist=%f, yaw=%f, pitch=%f, camPos=(%f,%f,%f)\n",
+    //       camDist, yaw, pitch, camPosX, camPosY, camPosZ);
+
 	if (getRenderInterface() && getRenderInterface()->getActiveCamera())
 	{
 		getRenderInterface()->getActiveCamera()->setCameraDistance(camDist);

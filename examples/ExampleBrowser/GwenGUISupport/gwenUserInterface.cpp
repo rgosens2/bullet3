@@ -473,6 +473,10 @@ void GwenUserInterface::draw(int width, int height)
 
 bool GwenUserInterface::mouseMoveCallback(float x, float y)
 {
+    // RG:
+    //printf("GwenUserInterface::mouseMoveCallback: x=%f, y=%f\n", x, y);
+    //return false;
+
 	bool handled = false;
 
 	static int m_lastmousepos[2] = {0, 0};
