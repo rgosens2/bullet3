@@ -27,7 +27,7 @@ subject to the following restrictions:
 // "command": "cmake",
 //            "args": ["--build", "build", "--target", "AppForkLiftDemoGui"]
 // Dit build specifiek alleen de ForkLiftDemo als standalone app met OpenGL GUI.
-
+// TEST: qqq
 
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
