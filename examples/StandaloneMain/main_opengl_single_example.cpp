@@ -79,7 +79,7 @@ public:
 int main(int argc, char* argv[])
 {
     // RG: We do not get here for standalone build???
-    // YESS: We now get here when we using VS Code
+    // YESS: We now get here when we are using VS Code
     // So there is a main() after all.
     printf("QQQ\n");
 

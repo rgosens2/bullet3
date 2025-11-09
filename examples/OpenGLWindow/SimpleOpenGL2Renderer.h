@@ -20,6 +20,9 @@ public:
 
 	virtual void updateCamera(int upAxis);
 
+    // RG: they forgot this one?
+    //virtual struct GLInstanceRendererInternalData* getInternalData() {}
+
 	virtual const CommonCameraInterface* getActiveCamera() const;
 	virtual CommonCameraInterface* getActiveCamera();
 	virtual void setActiveCamera(CommonCameraInterface* cam);

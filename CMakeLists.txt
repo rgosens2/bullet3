@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 # RG:
 # NOTE: 3.5 gives a warning but 3.10 is OK.
 # We keep it to easily open this file from Problems in VSCode.
