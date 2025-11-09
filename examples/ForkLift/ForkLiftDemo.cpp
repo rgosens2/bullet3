@@ -227,7 +227,6 @@ btScalar suspensionRestLength(0.6);
 
 ///////////////////////////////////////
 // RG: globals
-// Make the keyboard callback static, and forward to the current instance
 static CommonExampleInterface* g_currentDemo = nullptr;
 static void (*g_prevKeyboardCallback)(int key, int state) = nullptr;
 static CommonRenderInterface* g_renderer = nullptr;
@@ -253,7 +252,7 @@ static CommonExampleOptions* g_options; // for possible re-creation of the demo
 //#endif
 static bool g_renderGrid = true;
 
-
+// Make the keyboard callback static, and forward to the current instance
 void MyKeyboardCallback2(int key, int state)
 {
     // call your member function
