@@ -1,13 +1,6 @@
 # App_BasicExample is a minimal sample creating, stepping and deleting a Bullet dynamics world
 # RG: changed for ForkLiftDemo example
 
-# add_executable(ForkLiftDemo ForkLiftDemo.cpp)
-# target_link_libraries(ForkLiftDemo PRIVATE BulletDynamics BulletCollision LinearMath)
-# target_include_directories(ForkLiftDemo PRIVATE
-#     ${CMAKE_SOURCE_DIR}/src
-#     ${CMAKE_SOURCE_DIR}/examples/CommonInterfaces)
-# #################
-
 INCLUDE_DIRECTORIES(
 ${BULLET_PHYSICS_SOURCE_DIR}/src
 )
