@@ -30,6 +30,9 @@ CommonGraphicsApp* g_app = nullptr;
 // NOTE: This extern fucks up the original builds so we renamed this file to
 // main_opengl_single_example2.cpp and use that for our forklift standalone build.
 extern bool g_renderGrid;
+
+// NOTE: On macOS, a Cocoa window is created, not a GLFW window.
+// See: examples/OpenGLWindow/MacOpenGLWindowObjC.m
 ///////////////////////////////////////
 
 

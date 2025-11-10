@@ -389,6 +389,7 @@ int Mac_createWindow(struct MacOpenGLWindowInternalData* m_internalData,struct M
      [newItem release];
      */
     
+    // MARK: Create the window /////////////////////////////
     // RG: here is the window for Mac created. All Cocoa.
     // So window centering can be done here.
     NSRect frame = NSMakeRect(0., 0., ci->m_width, ci->m_height);
@@ -401,6 +402,28 @@ int Mac_createWindow(struct MacOpenGLWindowInternalData* m_internalData,struct M
     
     // YESS: center the window
     [m_internalData->m_window center];
+
+    // A bit lower
+    NSWindow* window = (__bridge NSWindow*)m_internalData->m_window;
+    // NOGO:
+    // Right — the reason NSRect frame = [window frame]; fails in your case is subtle:
+    // Your file is probably compiled as Objective-C++ (.mm).
+    // m_window is part of a C++ struct, and even after casting to NSWindow*, the compiler can get picky when returning a struct (NSRect) from an Objective-C message in a C++ context.
+    // On macOS, Objective-C methods that return structs (like NSRect) can cause ABI issues when called from C++ without the right bridging.
+    //NSRect frame = [window frame];       // get current window frame
+    //frame.origin.y -= 33;                  // move down 33 pixels
+    //[m_internalData->m_window setFrame:frame display:YES]; // apply new frame
+    // YESS:
+    // Get frame via method call without assigning
+    [window setFrame:NSMakeRect(
+        NSMinX([window frame]),
+        NSMinY([window frame]) - 22, // move down 22 pixels
+        NSWidth([window frame]),
+        NSHeight([window frame])
+    ) display:YES animate:NO];
+    /////////////////////////////////////////////////////
+    
+
 
     [m_internalData->m_window setTitle:[NSString stringWithCString:windowTitle encoding:NSISOLatin1StringEncoding]] ;
     
