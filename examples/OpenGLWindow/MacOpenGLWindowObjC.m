@@ -389,6 +389,8 @@ int Mac_createWindow(struct MacOpenGLWindowInternalData* m_internalData,struct M
      [newItem release];
      */
     
+    // RG: here is the window for Mac created. All Cocoa.
+    // So window centering can be done here.
     NSRect frame = NSMakeRect(0., 0., ci->m_width, ci->m_height);
     
     m_internalData->m_window = [NSWindow alloc];
@@ -397,7 +399,9 @@ int Mac_createWindow(struct MacOpenGLWindowInternalData* m_internalData,struct M
                                           backing:NSBackingStoreBuffered
                                             defer:false];
     
-    
+    // YESS: center the window
+    [m_internalData->m_window center];
+
     [m_internalData->m_window setTitle:[NSString stringWithCString:windowTitle encoding:NSISOLatin1StringEncoding]] ;
     
     m_internalData->m_myview = [TestView alloc];

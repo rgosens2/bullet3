@@ -28,7 +28,7 @@ CommonGraphicsApp* g_app = nullptr;
 
 // NOTE: Declared in ForkLiftDemo.cpp
 // NOTE: This extern fucks up the original builds so we renamed this file to
-// main_opengl_single_example2.cpp and use that for our forklift.
+// main_opengl_single_example2.cpp and use that for our forklift standalone build.
 extern bool g_renderGrid;
 ///////////////////////////////////////
 
@@ -91,6 +91,9 @@ int main(int argc, char* argv[])
     // RG: global
     g_app = app;
     //printf("QQQ\n");
+
+    // TEST: center the window
+    //app->m_window->
 
 	prevMouseButtonCallback = app->m_window->getMouseButtonCallback();
 	prevMouseMoveCallback = app->m_window->getMouseMoveCallback();
