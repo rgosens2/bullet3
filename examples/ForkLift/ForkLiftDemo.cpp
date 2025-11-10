@@ -250,7 +250,8 @@ static CommonExampleOptions* g_options; // for possible re-creation of the demo
 // ld: symbol(s) not found for architecture arm64
 //extern CommonGraphicsApp* g_app;
 //#endif
-static bool g_renderGrid = true;
+// NOTE: Do not make it static. Must be picked up in main_opengl_single_example.cpp
+bool g_renderGrid = true;
 
 // Make the keyboard callback static, and forward to the current instance
 void MyKeyboardCallback2(int key, int state)

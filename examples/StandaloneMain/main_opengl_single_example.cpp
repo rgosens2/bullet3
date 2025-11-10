@@ -26,7 +26,8 @@ subject to the following restrictions:
 // RG: globals
 CommonGraphicsApp* g_app = nullptr;
 
-extern bool g_renderGrid = false;
+// NOTE: Declared in ForkLiftDemo.cpp
+extern bool g_renderGrid;
 ///////////////////////////////////////
 
 
@@ -129,7 +130,9 @@ int main(int argc, char* argv[])
 
         // NOTE: We do this in ForkLiftDemo.cpp with a toggle
         // NONO: Do it here with a toggle from there
+        //printf("No Grid\n");
         if (g_renderGrid) {
+            printf("Render Grid\n");
             DrawGridData dg;
             dg.upAxis = app->getUpAxis();
             app->drawGrid(dg);

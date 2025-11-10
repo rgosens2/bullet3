@@ -1,4 +1,5 @@
 #!/bin/sh
+# RG: Aangepast voor macOS arm64 met dubbele precisie voor PyBullet
 
 # Remove old cache
 if [ -e CMakeCache.txt ]; then
@@ -35,4 +36,4 @@ ln -s ../../../examples/pybullet/gym/pybullet_envs .
 ln -s ../../../examples/pybullet/gym/pybullet_data .
 ln -s ../../../examples/pybullet/gym/pybullet_utils .
 
-echo "Completed build of Bullet."
+echo "Completed build of Bullet in build_cmake directory."
