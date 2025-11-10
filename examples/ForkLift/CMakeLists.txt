@@ -23,6 +23,10 @@ LINK_LIBRARIES(
 # ENDIF()
 
 
+# Supress deprecation warnings for this example
+add_compile_options(-Wno-deprecated-declarations)
+add_compile_options(-Wno-c++11-extensions)
+
 
 
 # IF (INTERNAL_ADD_POSTFIX_EXECUTABLE_NAMES)
