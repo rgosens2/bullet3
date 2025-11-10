@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         // NONO: Do it here with a toggle from there
         //printf("No Grid\n");
         if (g_renderGrid) {
-            printf("Render Grid\n");
+            //printf("Render Grid\n");
             DrawGridData dg;
             dg.upAxis = app->getUpAxis();
             app->drawGrid(dg);
