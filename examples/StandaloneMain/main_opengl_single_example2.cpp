@@ -21,6 +21,21 @@ subject to the following restrictions:
 #include <stdio.h>
 #include "../ExampleBrowser/OpenGLGuiHelper.h"
 
+
+///////////////////////////////////////
+// RG: globals
+CommonGraphicsApp* g_app = nullptr;
+
+// NOTE: Declared in ForkLiftDemo.cpp
+// NOTE: This extern fucks up the original builds so we renamed this file to
+// main_opengl_single_example2.cpp and use that for our forklift.
+extern bool g_renderGrid;
+///////////////////////////////////////
+
+
+
+
+
 CommonExampleInterface* example;
 int gSharedMemoryKey = -1;
 
@@ -66,7 +81,16 @@ public:
 };
 int main(int argc, char* argv[])
 {
+    // RG: We do not get here for standalone build???
+    // YESS: We now get here when we are using VS Code
+    // So there is a main() after all.
+    printf("QQQ\n");
+
 	SimpleOpenGL3App* app = new SimpleOpenGL3App("Bullet Standalone Example", 1024, 768, true);
+
+    // RG: global
+    g_app = app;
+    //printf("QQQ\n");
 
 	prevMouseButtonCallback = app->m_window->getMouseButtonCallback();
 	prevMouseMoveCallback = app->m_window->getMouseMoveCallback();
@@ -102,9 +126,19 @@ int main(int argc, char* argv[])
 
 		example->renderScene();
 
-		DrawGridData dg;
-		dg.upAxis = app->getUpAxis();
-		app->drawGrid(dg);
+        // RG: SHIT: even commenting out still draws the grid
+        //printf("QQQ\n");
+        // YESS: We now get here when we using VS Code
+
+        // NOTE: We do this in ForkLiftDemo.cpp with a toggle
+        // NONO: Do it here with a toggle from there
+        //printf("No Grid\n");
+        if (g_renderGrid) {
+            //printf("Render Grid\n");
+            DrawGridData dg;
+            dg.upAxis = app->getUpAxis();
+            app->drawGrid(dg);
+        }
 
 		app->swapBuffer();
 	} while (!app->m_window->requestedExit());

@@ -50,7 +50,7 @@ INCLUDE_DIRECTORIES(
 SET(AppForkLiftDemoGui_SRCS
 	ForkLiftDemo.cpp
         ${BULLET_PHYSICS_SOURCE_DIR}/build3/bullet.rc
-	    ../StandaloneMain/main_opengl_single_example.cpp
+	    ../StandaloneMain/main_opengl_single_example2.cpp
         ../ExampleBrowser/OpenGLGuiHelper.cpp
         ../ExampleBrowser/GL_ShapeDrawer.cpp
         ../ExampleBrowser/CollisionShape2TriangleMesh.cpp
